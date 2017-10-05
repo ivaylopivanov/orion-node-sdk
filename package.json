@@ -1,6 +1,6 @@
 {
   "name": "@betit/orion",
-  "version": "0.1.31",
+  "version": "1.0.0-beta.1",
   "description": "Pluggable microservice framework",
   "license": "MIT",
   "repository": "betit/orion",
