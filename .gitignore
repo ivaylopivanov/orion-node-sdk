@@ -1,0 +1,13 @@
+.DS_Store
+.nyc_output
+coverage
+node_modules
+npm-debug.log
+lib
+public
+tmp
+vendor
+.idea/
+.history
+.vscode
+debug

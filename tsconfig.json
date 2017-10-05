@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "module": "commonjs",
+        "target": "es2015",
+        "outDir": "lib"
+    },
+    "exclude": [
+        "node_modules",
+        "lib",
+        "test"
+    ]
+}
