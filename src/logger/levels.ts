@@ -1,0 +1,9 @@
+module.exports.EMERGENCY = 0; // system is unusable
+module.exports.ALERT = 1; // action must be taken immediately
+module.exports.CRITICAL = 2; // critical conditions
+module.exports.ERR = 3; // error conditions
+module.exports.ERROR = 3; // because people WILL typo
+module.exports.WARNING = 4; // warning conditions
+module.exports.NOTICE = 5; // normal, but significant, condition
+module.exports.INFO = 6; // informational message
+module.exports.DEBUG = 7; // debug level message

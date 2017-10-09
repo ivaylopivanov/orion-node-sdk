@@ -2,6 +2,7 @@
 'use strict';
 
 const ORION = require('../../');
+const LOGGER_LEVELS = require('../../lib/logger/levels')
 
 const SERVICE = new ORION.Service('examples-node');
 
@@ -13,7 +14,7 @@ SERVICE.handle('delay', (req, reply) => {
   setTimeout(() => {
     reply(new ORION.Response(RESULT, new ORION.Error("404", "Not Found")));
   }, 1000);
-  SERVICE.logger.createMessage
+  SERVICE.logger.createMessage('delay').setLevel(LOGGER_LEVELS.INFO).setParams(RESULT).send();
 });
 
 SERVICE.handle('dummy', (req, reply) => {
