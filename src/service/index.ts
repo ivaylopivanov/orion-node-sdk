@@ -50,45 +50,28 @@ export class Service {
     });
   }
 
+
+
   /**
-   * Register request handler method.
+   * Register request handler method with enabled logging.
    * @param {string} method
    * @param {Function} callback
    * @param {string} [prefix]
    */
   public handle(path: string, callback: Function, prefix?: string) {
-    const ROUTE = `${prefix || this.name}.${path}`;
-    DEBUG('register handler:', ROUTE);
-    this._transport.handle(ROUTE, this.name, (data, send) => {
+    const LOGGING = true;
+    this._handle(path, callback, LOGGING, prefix);
+  }
 
-      const DATA = this._codec.decode(data);
-      let req = new Request(DATA.path, this._tryParse(DATA.params));
-      req.meta = DATA.meta;
-      req.tracerData = DATA.tracerData;
-
-      this.logger.createMessage(path)
-                 .setLevel(6)
-                 .setId(req.getId())
-                 .setParams(req.params)
-                 .send();
-
-      DEBUG('incoming request:', req);
-
-      callback(req, (res: Response) => {
-        this._checkResponse(res);
-        if (res.error) {
-
-          this.logger.createMessage(path)
-                     .setLevel(3)
-                     .setId(req.getId())
-                     .setParams(JSON.stringify(res.error))
-                     .send();
-        }
-        res.payload = this._toBuffer(res.payload);
-        send(this._codec.encode(res));
-
-      });
-    });
+  /**
+   * Register request handler method with disabled logging.
+   * @param {string} method
+   * @param {Function} callback
+   * @param {string} [prefix]
+   */
+  public handleWithoutLogging(path: string, callback: Function, prefix?: string) {
+    const LOGGING = false;
+    this._handle(path, callback, LOGGING, prefix);
   }
 
   /**
@@ -165,6 +148,43 @@ export class Service {
         callback(response);
       }
     }, this.getCallTimeout(req.path, req.callTimeout));
+  }
+
+  private _handle(path: string, callback: Function, logging: boolean, prefix?: string) {
+    const ROUTE = `${prefix || this.name}.${path}`;
+    DEBUG('register handler:', ROUTE);
+    this._transport.handle(ROUTE, this.name, (data, send) => {
+
+      const DATA = this._codec.decode(data);
+      let req = new Request(DATA.path, this._tryParse(DATA.params));
+      req.meta = DATA.meta;
+      req.tracerData = DATA.tracerData;
+
+      if (logging) {
+        this.logger.createMessage(path)
+                   .setLevel(6)
+                   .setId(req.getId())
+                   .setParams(req.params)
+                   .send();
+      }
+
+      DEBUG('incoming request:', req);
+
+      callback(req, (res: Response) => {
+        this._checkResponse(res);
+        if (res.error && logging) {
+
+          this.logger.createMessage(path)
+                     .setLevel(3)
+                     .setId(req.getId())
+                     .setParams(JSON.stringify(res.error))
+                     .send();
+        }
+        res.payload = this._toBuffer(res.payload);
+        send(this._codec.encode(res));
+
+      });
+    });
   }
 
   private _serializeRequest(request: Request, callback?: Function) {
