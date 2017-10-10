@@ -31,7 +31,7 @@ export class Service {
     this.options = Object.assign({
       callTimeout: 200
     }, options);
-    this._codec = this.options.codec || new DefaultCodec();
+    this._codec = new DefaultCodec();
     this._transport = this.options.transport || new DefaultTransport();
     this._tracer = this.options.tracer || new DefatulTracer(name);
     this.logger = this.options.logger || new DefaultLogger(name);
@@ -142,7 +142,7 @@ export class Service {
       } else {
         const RESULT = this._codec.decode(res);
         let response = new Response(RESULT.payload, RESULT.error);
-        response.payload = this._tryParse(response.payload);
+        response.payload = this._codec.decode(response.payload);
         DEBUG('got response:', response);
         CLOSE_TRACER();
         callback(response);
@@ -156,7 +156,10 @@ export class Service {
     this._transport.handle(ROUTE, this.name, (data, send) => {
 
       const DATA = this._codec.decode(data);
-      let req = new Request(DATA.path, this._tryParse(DATA.params));
+      if (DATA.params) {
+        DATA.params = this._codec.decode(DATA.params);
+      }
+      let req = new Request(DATA.path, DATA.params || {});
       req.meta = DATA.meta;
       req.tracerData = DATA.tracerData;
 
@@ -180,7 +183,7 @@ export class Service {
                      .setParams(JSON.stringify(res.error))
                      .send();
         }
-        res.payload = this._toBuffer(res.payload);
+        res.payload = this._codec.encode(res.payload);
         send(this._codec.encode(res));
 
       });
@@ -210,7 +213,7 @@ export class Service {
       route = `${this.options.service}.${route}`;
     }
 
-    const REQ = new Request(request.path, this._toBuffer(request.params));
+    const REQ = new Request(request.path, this._codec.encode(request.params));
     REQ.callTimeout = request.callTimeout;
     REQ.tracerData = request.tracerData;
     REQ.meta = request.meta;
@@ -227,27 +230,6 @@ export class Service {
     if (res.error !== undefined &&
         res.error instanceof OrionError === false) {
       throw new Error('The passed error must instance of Orion.Error');
-    }
-  }
-
-  private _toBuffer(payload: any): Buffer {
-    if (payload === undefined) {
-      payload = null;
-    }
-    return Buffer.from(JSON.stringify(payload));
-  }
-
-  private _tryParse(data: any): any {
-    if (data === undefined || data === null) {
-      return data;
-    }
-    if (typeof data !== 'string') {
-      data = data.toString();
-    }
-    try {
-      return JSON.parse(data);
-    } catch (e) {
-      return data;
     }
   }
 

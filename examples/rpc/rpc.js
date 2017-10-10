@@ -18,12 +18,13 @@ SERVICE.handle('delay', (req, reply) => {
 });
 
 SERVICE.handle('dummy', (req, reply) => {
+  console.log('dummy handle', req)
   req.path = '/examples-go/dummy';
   req.params = {
     bar: {
       foo: "baz",
       n: 2,
-      now: new Date(),
+      now: new Date().toString(),
     }
   };
   SERVICE.call(req, (res) => {
@@ -64,7 +65,7 @@ function example2() {
     bar: {
       foo: "baz",
       n: 2,
-      now: new Date(),
+      now: new Date().toString(),
     }
   };
   const PATH = '/examples-go/dummy';
@@ -81,7 +82,7 @@ function example3() {
     bar: {
       foo: "baz",
       n: 2,
-      now: new Date(),
+      now: new Date().toString(),
     }
   };
   const PATH = '/examples-node/dummy';
