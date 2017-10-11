@@ -142,7 +142,9 @@ export class Service {
       } else {
         const RESULT = this._codec.decode(res);
         let response = new Response(RESULT.payload, RESULT.error);
-        response.payload = this._codec.decode(response.payload);
+        if (response.payload) {
+          response.payload = this._codec.decode(response.payload);
+        }
         DEBUG('got response:', response);
         CLOSE_TRACER();
         callback(response);
