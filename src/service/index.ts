@@ -3,6 +3,7 @@ import { DefaultBinaryCodec as DefaultCodec } from '../codec';
 import { DefaultTransport } from '../transport';
 import { Tracer as DefatulTracer } from '../tracer/tracer';
 import { Logger as DefaultLogger } from '../logger/logger';
+import * as LOGGER_LEVELS from '../logger/levels';
 import { Request } from '../request/request';
 import { Response } from '../response/response';
 import { OrionError } from '../error/error';
@@ -167,7 +168,7 @@ export class Service {
 
       if (logging) {
         this.logger.createMessage(path)
-                   .setLevel(6)
+                   .setLevel(LOGGER_LEVELS.INFO)
                    .setId(req.getId())
                    .setParams(req.params)
                    .send();
@@ -180,7 +181,7 @@ export class Service {
         if (res.error && logging) {
 
           this.logger.createMessage(path)
-                     .setLevel(3)
+                     .setLevel(LOGGER_LEVELS.ERROR)
                      .setId(req.getId())
                      .setParams(JSON.stringify(res.error))
                      .send();
