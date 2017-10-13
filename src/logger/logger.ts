@@ -7,6 +7,7 @@ import { Message } from './message';
 export class Logger implements LoggerInterface {
 
   private _client: any;
+  private _vernose = process.argv.indexOf('--verbose') !== 0;
 
   constructor(private _serviceName: string) {
     this._client = new graylog({
@@ -21,6 +22,9 @@ export class Logger implements LoggerInterface {
 
   public send(m: RawMessage) {
     this._client.raw(m);
+    if (this._vernose) {
+      console.log(m);
+    }
   }
 
 }
