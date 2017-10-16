@@ -6,6 +6,15 @@ const LOGGER_LEVELS = require('../../lib/logger/levels')
 
 const SERVICE = new ORION.Service('examples-node');
 
+SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.CRITICAL).send()
+SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.EMERGENCY).send()
+SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.ERROR).send()
+SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.ALERT).send()
+SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.WARNING).send()
+SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.INFO).send()
+SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.NOTICE).send()
+SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.DEBUG).send()
+
 SERVICE.handle('delay', (req, reply) => {
   const RESULT = {
     timeOfRequest: req.meta.time,
