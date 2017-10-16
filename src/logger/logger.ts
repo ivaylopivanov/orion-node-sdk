@@ -38,11 +38,31 @@ export class Logger implements LoggerInterface {
 
   private _getTime(): string {
     const TODAY = new Date();
-    const HOURS = TODAY.getHours();
-    const MINUTES = TODAY.getMinutes();
-    const SECONDS = TODAY.getSeconds();
-    const MILISECONDS = TODAY.getMilliseconds();
-    return HOURS + ':' + MINUTES + ':' + SECONDS + ':' + MILISECONDS;
+
+    let hours: any = TODAY.getHours();
+    if (hours < 10) {
+      hours = '0' + hours;
+    }
+
+    let minutes: any = TODAY.getMinutes();
+    if (minutes < 10) {
+      minutes = '0' + minutes;
+    }
+
+    let seconds: any = TODAY.getSeconds();
+    if (seconds < 10) {
+      seconds = '0' + seconds;
+    }
+
+    let milliseconds: any = TODAY.getMilliseconds();
+    if (milliseconds < 10) {
+      milliseconds = '0' + milliseconds;
+    }
+    if (milliseconds < 99) {
+      milliseconds = '0' + milliseconds;
+    }
+
+    return hours + ':' + minutes + ':' + seconds + ':' + milliseconds;
   }
 
 }
