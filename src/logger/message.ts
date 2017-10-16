@@ -27,14 +27,21 @@ export class Message implements MessageInterface {
   }
 
   public send() {
-    this._client.send({
-      level: this._level,
+    let m: any = {
       host: this._host,
-      params: this._params,
-      message: this._message,
-      'x-trace-id': this._id,
       timestamp: Math.round(new Date().getTime() / 1000),
-    });
+      message: this._message,
+    };
+    if (this._level !== undefined) {
+      m.level = this._level;
+    }
+    if (this._params !== undefined) {
+      m.params = this._params;
+    }
+    if (this._id !== undefined) {
+      m['x-trace-id'] = this._id;
+    }
+    this._client.send(m);
   }
 
 }
