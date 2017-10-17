@@ -14,7 +14,7 @@ $ npm test
 
 [MIT](https://github.com/betit/orion-node-sdk/blob/master/LICENSE)
 
-[travis-image]: https://travis-ci.org/betit/orion-node-sdk/.svg?branch=master
+[travis-image]: https://travis-ci.org/betit/orion-node-sdk.svg?branch=master
 [travis-url]: https://travis-ci.org/betit/orion-node-sdk/
 [coveralls-image]: https://coveralls.io/repos/betit/orion-node-sdk/badge.svg
 [coveralls-url]: https://coveralls.io/r/betit/orion-node-sdk
