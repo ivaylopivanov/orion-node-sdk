@@ -4,6 +4,8 @@
 
 ## Installation
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/betit/orion-node-sdk.svg)](https://greenkeeper.io/)
+
 ```sh
 $ npm install @betit/orion-node-sdk
 ```
