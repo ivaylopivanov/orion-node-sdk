@@ -6,14 +6,14 @@ const LOGGER_LEVELS = require('../../lib/logger/levels')
 
 const SERVICE = new ORION.Service('examples-node');
 
-SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.CRITICAL).send()
-SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.EMERGENCY).send()
-SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.ERROR).send()
-SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.ALERT).send()
-SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.WARNING).send()
-SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.INFO).send()
-SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.NOTICE).send()
-SERVICE.logger.createMessage("TEST").setLevel(LOGGER_LEVELS.DEBUG).send()
+SERVICE.logger.createMessage('TEST').setLevel(LOGGER_LEVELS.CRITICAL).send()
+SERVICE.logger.createMessage('TEST').setLevel(LOGGER_LEVELS.EMERGENCY).send()
+SERVICE.logger.createMessage('TEST').setLevel(LOGGER_LEVELS.ERROR).send()
+SERVICE.logger.createMessage('TEST').setLevel(LOGGER_LEVELS.ALERT).send()
+SERVICE.logger.createMessage('TEST').setLevel(LOGGER_LEVELS.WARNING).send()
+SERVICE.logger.createMessage('TEST').setLevel(LOGGER_LEVELS.INFO).send()
+SERVICE.logger.createMessage('TEST').setLevel(LOGGER_LEVELS.NOTICE).send()
+SERVICE.logger.createMessage('TEST').setLevel(LOGGER_LEVELS.DEBUG).send()
 
 SERVICE.handle('delay', (req, reply) => {
   const RESULT = {
@@ -21,17 +21,17 @@ SERVICE.handle('delay', (req, reply) => {
     passedDate: req.params,
   };
   setTimeout(() => {
-    reply(new ORION.Response(RESULT, new ORION.Error("404", "Not Found")));
+    reply(new ORION.Response(RESULT, new ORION.Error('404', 'Not Found')));
   }, 1000);
   SERVICE.logger.createMessage('delay').setLevel(LOGGER_LEVELS.INFO).setParams(RESULT).send();
 });
 
 SERVICE.handle('dummy', (req, reply) => {
-  console.log('dummy handle', req)
+  console.log('dummy handle', req);
   req.path = '/examples-go/dummy';
   req.params = {
     bar: {
-      foo: "baz",
+      foo: 'baz',
       n: 2,
       now: new Date().toString(),
     }
@@ -72,7 +72,7 @@ function example1() {
 function example2() {
   const PARAMS = {
     bar: {
-      foo: "baz",
+      foo: 'baz',
       n: 2,
       now: new Date().toString(),
     }
@@ -89,7 +89,7 @@ function example2() {
 function example3() {
   const PARAMS = {
     bar: {
-      foo: "baz",
+      foo: 'baz',
       n: 2,
       now: new Date().toString(),
     }

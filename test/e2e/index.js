@@ -82,7 +82,6 @@ describe(SERVICE_NAME, () => {
     });
   
     SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD);
-
   });
 
 });

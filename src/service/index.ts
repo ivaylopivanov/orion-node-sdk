@@ -216,8 +216,11 @@ export class Service {
     if (this.options.service) {
       route = `${this.options.service}.${route}`;
     }
-
-    let req = new Request(request.path, this._codec.encode(request.params));
+    let encodedParams;
+    if (request.params !== undefined) {
+        encodedParams = this._codec.encode(request.params);
+    }
+    let req = new Request(request.path, encodedParams);
     req.timeout = request.timeout;
     req.tracerData = request.tracerData;
     req.meta = request.meta;
