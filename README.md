@@ -10,7 +10,7 @@ $ npm install @betit/orion-node-sdk
 
 ## Basic example
 
-### Note - You will need to have running all of the orion (dependencies)[https://github.com/betit/orion/tree/dev#development]
+### Note - You will need to have running all of the orion [dependencies](https://github.com/betit/orion/tree/dev#development)
 
 In `foo.js` write the following:
 
