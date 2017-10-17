@@ -1,7 +1,7 @@
 export class Request {
 
   public tracerData: {[key: string]: string[]} = {};
-  public callTimeout: number;
+  public timeout: number;
   public meta: {[key: string]: string} = {};
 
   constructor(public path: string, public params?: any) {

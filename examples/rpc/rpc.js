@@ -61,7 +61,7 @@ function example1() {
   const PATH = '/examples-node/delay';
   const REQ = new ORION.Request(PATH, PARAMS);
   REQ.meta.time = new Date().toString();
-  REQ.callTimeout = 1100;
+  REQ.timeout = 1100;
   SERVICE.call(REQ, (res) => {
     console.log('/examples-node/delay request id', REQ.getId());
     console.log('/examples-node/delay response', res.payload);

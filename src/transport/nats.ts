@@ -68,7 +68,7 @@ export class NatsTransport {
    * Publish a request with an implicit inbox listener as the response.
    * This should be treated as a subscription.
    */
-  public request(route: string, payload: any, callback: Function, timeout: number = 1000) {
+  public request(route: string, payload: any, callback: Function, timeout: number = 200) {
     DEBUG('sending request:', route);
     const SID = this._client.request(route, payload, { max: 1 }, response => {
       DEBUG('got response:', response);

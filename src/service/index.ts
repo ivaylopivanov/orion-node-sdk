@@ -30,7 +30,8 @@ export class Service {
    */
   constructor(public name: string, protected options: Options = {}) {
     this.options = Object.assign({
-      callTimeout: 200
+      timeout: 200,
+      timeouts: {},
     }, options);
     this._codec = new DefaultCodec();
     this._transport = this.options.transport || new DefaultTransport();
@@ -125,12 +126,12 @@ export class Service {
     this._serializeRequest(req, callback);
   }
 
-  public getCallTimeout(path: string, timeout: number) {
+  private _getCallTimeout(path: string, timeout: number) {
     let options = this.options;
     let specificCallTimeout =
-      options.callTimeouts && options.callTimeouts[path];
+      options.timeout && options.timeouts[path];
 
-    return timeout || specificCallTimeout || options.callTimeout;
+    return timeout || specificCallTimeout || options.timeout;
   }
 
   private _call(route: string, req: Request, callback: Function) {
@@ -150,7 +151,7 @@ export class Service {
         CLOSE_TRACER();
         callback(response);
       }
-    }, this.getCallTimeout(req.path, req.callTimeout));
+    }, this._getCallTimeout(req.path, req.timeout));
   }
 
   private _handle(path: string, callback: Function, logging: boolean, prefix?: string) {
@@ -216,14 +217,14 @@ export class Service {
       route = `${this.options.service}.${route}`;
     }
 
-    const REQ = new Request(request.path, this._codec.encode(request.params));
-    REQ.callTimeout = request.callTimeout;
-    REQ.tracerData = request.tracerData;
-    REQ.meta = request.meta;
+    let req = new Request(request.path, this._codec.encode(request.params));
+    req.timeout = request.timeout;
+    req.tracerData = request.tracerData;
+    req.meta = request.meta;
 
     DEBUG('calling:', route);
     DEBUG('sending request:', request);
-    this._call(route, REQ, callback);
+    this._call(route, req, callback);
   }
 
   private _checkResponse(res: Response) {

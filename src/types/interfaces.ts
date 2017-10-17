@@ -69,7 +69,7 @@ export interface Options {
   tracer?: Tracer;
   transport?: Transport;
   logger?: Logger;
-  callTimeout?: number;
-  callTimeouts?: {};
+  timeout?: number;
+  timeouts?: {};
   service?: string;
 }
