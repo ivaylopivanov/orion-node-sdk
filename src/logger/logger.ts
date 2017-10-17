@@ -9,7 +9,7 @@ import * as LoggerLevels from './levels';
 export class Logger implements LoggerInterface {
 
   private _client: any;
-  private _vernose = process.argv.indexOf('--verbose') !== 0;
+  private _vernose = process.argv.indexOf('--verbose') !== -1;
 
   constructor(private _serviceName: string) {
     this._client = new graylog({
