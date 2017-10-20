@@ -30,7 +30,7 @@
     "coveralls": "3.0.0",
     "istanbul": "0.4.5",
     "mocha": "4.0.1",
-    "tslint": "5.7.0",
+    "tslint": "5.8.0",
     "typescript": "2.5.3"
   }
 }
