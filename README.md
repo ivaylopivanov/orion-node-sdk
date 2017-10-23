@@ -14,28 +14,30 @@ $ npm install @betit/orion-node-sdk
 
 ### Note - You will need to have running all of the orion [dependencies](https://github.com/betit/orion/tree/dev#development)
 
-In `foo.js` write the following:
+Add the following into `foo.js` and then run `node foo.js --verbose`
 
 ```js
 const ORION = require('@betit/orion-node-sdk');
 const FOO = new ORION.Service('foo');
-const BAR = new ORION.Service('bar');
 
 FOO.handle('get', (req, reply) => {
   reply(new ORION.Response('foo'));
 });
 
-FOO.listen(() => {
-  FOO.logger.createMessage('ready').send();
-
-  const REQ = new ORION.Request('/foo/get');
-  BAR.call(REQ, res => {
-    // do stuff
-  });
-});
+FOO.listen(() => FOO.logger.createMessage('ready').send());
 ```
 
-And run it like that: `node foo.js --verbose`
+Then add the following into `bar.js` and then run `node bar.js`
+
+```js
+const ORION = require('@betit/orion-node-sdk');
+const BAR = new ORION.Service('bar');
+
+const REQ = new ORION.Request('/foo/get');
+BAR.call(REQ, res => {
+  // do stuff
+});
+```
 
 You can find more detailed examples in the `examples` folder.
 
