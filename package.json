@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "debug": "3.1.0",
-    "graygelf": "1.0.2",
+    "graygelf": "1.1.0",
     "msgpack-lite": "0.1.26",
     "nats": "0.7.24",
     "uuid": "3.1.0",
