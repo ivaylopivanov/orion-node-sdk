@@ -41,6 +41,10 @@ BAR.call(REQ, res => {
 
 You can find more detailed examples in the `examples` folder.
 
+# Documentation
+
+Auto-generated documentation is located [here](https://betit.github.io/orion-node-sdk/).
+
 ## Tests
 
   To run the test suite, first install the dependencies, then run `npm test`:

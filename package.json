@@ -1,11 +1,20 @@
 {
   "name": "@betit/orion-node-sdk",
-  "version": "1.0.0-beta.12",
-  "description": "SDK for orion microservice",
+  "version": "1.0.0-beta.13",
+  "description": "SDK for orion",
   "license": "MIT",
   "repository": "betit/orion-node-sdk",
   "typings": "lib/orion.d.ts",
   "main": "lib/orion.js",
+  "keywords": [
+    "microservices",
+    "cross-language",
+    "sdk",
+    "orion",
+    "client",
+    "node",
+    "framework"
+  ],
   "scripts": {
     "build": "tsc && npm run ghpages && cp .nojekyll docs/.nojekyll",
     "test": "npm run lint && npm run build && node_modules/.bin/mocha ./test",
