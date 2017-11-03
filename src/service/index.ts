@@ -144,9 +144,6 @@ export class Service {
       } else {
         const RESULT = this._codec.decode(res);
         let response = new Response(RESULT.payload, RESULT.error);
-        if (response.payload) {
-          response.payload = this._codec.decode(response.payload);
-        }
         DEBUG('got response:', response);
         CLOSE_TRACER();
         callback(response);
@@ -160,10 +157,7 @@ export class Service {
     this._transport.handle(ROUTE, this.name, (data, send) => {
 
       const DATA = this._codec.decode(data);
-      if (DATA.params) {
-        DATA.params = this._codec.decode(DATA.params);
-      }
-      let req = new Request(DATA.path, DATA.params || {});
+      let req = new Request(DATA.path, DATA.params);
       req.meta = DATA.meta;
       req.tracerData = DATA.tracerData;
 
@@ -187,9 +181,7 @@ export class Service {
                      .setParams(JSON.stringify(res.error))
                      .send();
         }
-        res.payload = this._codec.encode(res.payload);
         send(this._codec.encode(res));
-
       });
     });
   }
@@ -216,11 +208,8 @@ export class Service {
     if (this.options.service) {
       route = `${this.options.service}.${route}`;
     }
-    let encodedParams;
-    if (request.params !== undefined) {
-        encodedParams = this._codec.encode(request.params);
-    }
-    let req = new Request(request.path, encodedParams);
+
+    let req = new Request(request.path, request.params);
     req.timeout = request.timeout;
     req.tracerData = request.tracerData;
     req.meta = request.meta;

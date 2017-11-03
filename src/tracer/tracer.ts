@@ -121,8 +121,8 @@ export class Tracer {
 
   private _getHeadersForRequest(data: any): any {
     let headers = {};
-    headers[Header.traceid] = [data[Header.TraceId]];
-    headers[Header.spanid] = [data[Header.SpanId]];
+    headers[Header.TraceId] = [data[Header.TraceId]];
+    headers[Header.SpanId] = [data[Header.SpanId]];
     headers[Header.Sampled] = [data[Header.Sampled]];
     const PARENT_SPAIN_ID = data[Header.ParentSpanId];
     if (PARENT_SPAIN_ID !== undefined) {
