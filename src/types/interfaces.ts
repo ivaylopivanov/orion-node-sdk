@@ -18,6 +18,7 @@ export interface Transport {
   handle(route: string, group: string, callback: Function);
   request(route: string, payload: any, callback: Function, timeout: number);
   close();
+  onClose(callback: (...args: any[]) => void);
 }
 
 // client

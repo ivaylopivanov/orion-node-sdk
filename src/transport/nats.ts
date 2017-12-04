@@ -18,6 +18,32 @@ export class NatsTransport {
       encoding: 'binary'
     }, _options);
     this._client = nats.connect(this._options);
+
+    this._client.on('error', function(e) {
+      DEBUG(e);
+      process.exit(1);
+    });
+
+    this.heartbeat();
+  }
+
+  /**
+   * NATS heartbeat check based on
+   * https://github.com/nats-io/node-nats/issues/173
+   */
+  heartbeat() {
+    let timeout = null;
+    setInterval(() => {
+      timeout = setTimeout(() => {
+        timeout = null;
+      }, 500);
+      this.listen(() => {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
+      });
+    }, 1000);
   }
 
   /**
@@ -85,5 +111,15 @@ export class NatsTransport {
    */
   public close() {
     this._client.close();
+  }
+
+  /**
+   * Connection closed handler
+   * @param {(...args: any[]) => void} callback
+   */
+  onClose(callback: (...args: any[]) => void) {
+    if (callback) {
+      this._client.on('close', callback);
+    }
   }
 }

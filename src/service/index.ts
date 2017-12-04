@@ -94,6 +94,17 @@ export class Service {
   }
 
   /**
+   * Connection closed handler
+   * @param {Function} callback
+   */
+  onClose(callback) {
+    this._transport.onClose(() => {
+      DEBUG('on close');
+      callback();
+    });
+  }
+
+  /**
    * Service name and id.
    */
   public toString() {
