@@ -1,6 +1,6 @@
 {
   "name": "@betit/orion-node-sdk",
-  "version": "1.0.0-beta.14",
+  "version": "1.0.0-beta.15",
   "description": "SDK for orion",
   "license": "MIT",
   "repository": "betit/orion-node-sdk",
