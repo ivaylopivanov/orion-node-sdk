@@ -7,7 +7,9 @@ const DEBUG = debugLog('orion:transport:nats');
  * NATS transport.
  */
 export class NatsTransport {
+
   private _client: nats.Client;
+  private _heartbeat: NodeJS.Timer;
 
   /**
    * Create new NATS transport.
@@ -33,7 +35,7 @@ export class NatsTransport {
    */
   heartbeat() {
     let timeout = null;
-    setInterval(() => {
+    this._heartbeat = setInterval(() => {
       timeout = setTimeout(() => {
         timeout = null;
       }, 500);
@@ -111,6 +113,9 @@ export class NatsTransport {
    */
   public close() {
     this._client.close();
+    if (this._heartbeat) {
+      clearInterval(this._heartbeat);
+    }
   }
 
   /**
