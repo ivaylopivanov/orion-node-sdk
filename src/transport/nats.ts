@@ -9,6 +9,8 @@ const DEBUG = debugLog('orion:transport:nats');
 export class NatsTransport {
   private _client: nats.Client;
 
+  private _closeHandler: Function;
+
   /**
    * Create new NATS transport.
    */
@@ -50,42 +52,84 @@ export class NatsTransport {
    * Transport listen.
    */
   public listen(callback: Function) {
-    this._client.flush(callback);
+    try {
+      this._client.flush((err) => {
+        if (err) {
+          throw err;
+        }
+        if (callback && callback instanceof Function) {
+          callback();
+        }
+      });
+    } catch (e) {
+      if (e.code === nats.CONN_CLOSED && this._closeHandler) {
+        this._closeHandler();
+      }
+      throw e;
+    }
   }
 
   /**
    * Publish to a topic.
    */
   public publish(topic: string, message: any) {
-    this._client.publish(topic, message);
+    try {
+      this._client.publish(topic, message);
+    } catch (e) {
+      if (e.code === nats.CONN_CLOSED && this._closeHandler) {
+        this._closeHandler();
+      }
+      throw e;
+    }
   }
 
   /**
    * Subscribe to a topic.
    */
   public subscribe(topic: string, group: string, callback: Function) {
-    return this._client.subscribe(topic, { queue: group }, callback);
+    try {
+      return this._client.subscribe(topic, { queue: group }, callback);
+    } catch (e) {
+      if (e.code === nats.CONN_CLOSED && this._closeHandler) {
+        this._closeHandler();
+      }
+      throw e;
+    }
   }
 
   /**
   * Unsubscribe from a topic.
   */
   public unsubscribe(sid: number, max?: number) {
-    this._client.unsubscribe(sid, max);
+    try {
+      this._client.unsubscribe(sid, max);
+    } catch (e) {
+      if (e.code === nats.CONN_CLOSED && this._closeHandler) {
+        this._closeHandler();
+      }
+      throw e;
+    }
   }
 
   /**
    * Transport handle.
    */
   public handle(route: string, group: string, callback: Function) {
-    DEBUG('register handler:', route);
-    this._client.subscribe(route, { queue: group }, (req, replyTo) => {
-      DEBUG('incoming request:', req, replyTo);
-      callback(req, res => {
-        DEBUG('sending response:', replyTo, res);
-        this._client.publish(replyTo, res);
+    try {
+      DEBUG('register handler:', route);
+      this._client.subscribe(route, { queue: group }, (req, replyTo) => {
+        DEBUG('incoming request:', req, replyTo);
+        callback(req, res => {
+          DEBUG('sending response:', replyTo, res);
+          this._client.publish(replyTo, res);
+        });
       });
-    });
+    } catch (e) {
+      if (e.code === nats.CONN_CLOSED && this._closeHandler) {
+        this._closeHandler();
+      }
+      throw e;
+    }
   }
 
   /**
@@ -95,15 +139,22 @@ export class NatsTransport {
    * This should be treated as a subscription.
    */
   public request(route: string, payload: any, callback: Function, timeout: number = 200) {
-    DEBUG('sending request:', route);
-    const SID = this._client.request(route, payload, { max: 1 }, response => {
-      DEBUG('got response:', response);
-      callback(response);
-    });
-    this._client.timeout(SID, timeout, 1, () => {
-      DEBUG('request timeout:', route);
-      callback(new Error(`Transport timeout: ${route}`));
-    });
+    try {
+      DEBUG('sending request:', route);
+      const SID = this._client.request(route, payload, { max: 1 }, response => {
+        DEBUG('got response:', response);
+        callback(response);
+      });
+      this._client.timeout(SID, timeout, 1, () => {
+        DEBUG('request timeout:', route);
+        callback(new Error(`Transport timeout: ${route}`));
+      });
+    } catch (e) {
+      if (e.code === nats.CONN_CLOSED && this._closeHandler) {
+        this._closeHandler();
+      }
+      throw e;
+    }
   }
 
   /**
@@ -119,6 +170,7 @@ export class NatsTransport {
    */
   onClose(callback: (...args: any[]) => void) {
     if (callback) {
+      this._closeHandler = callback;
       this._client.on('close', callback);
     }
   }
