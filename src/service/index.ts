@@ -176,7 +176,10 @@ export class Service {
         this.logger.createMessage(path)
                    .setLevel(LOGGER_LEVELS.INFO)
                    .setId(req.getId())
-                   .setParams(req.params)
+                   .setParams({
+                     params: req.params,
+                     meta: req.meta
+                   })
                    .send();
       }
 
