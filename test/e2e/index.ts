@@ -1,10 +1,9 @@
-// @ts-check
-'use strict';
+import * as ORION from '../../src/orion';
+import * as CALC_SERVICE from './calc.service';
+import * as TIME_SERVICE from './time.service';
+import * as chai from 'chai';
 
-const ORION = require('../../');
-const CALC_SERVICE = require('./calc.service');
-const TIME_SERVICE = require('./time.service');
-const EXPECT = require('chai').expect;
+const EXPECT = chai.expect;
 
 const SERVICE_NAME = 'e2e';
 const SVC = new ORION.Service(SERVICE_NAME);
@@ -19,21 +18,21 @@ describe(SERVICE_NAME, () => {
     CALC_SERVICE.listen(instance => {
 
       const REQ = new ORION.Request('/calc/sum', {a: 1, b: 2});
-      
+
       SVC.call(REQ, res => {
         EXPECT(res.payload).equal(3);
         CALC_SERVICE.close(instance);
         next();
       });
-      
+
     });
   });
-  
+
   it('Should get the time', next => {
     TIME_SERVICE.listen(instance => {
-      
+
       const REQ = new ORION.Request('/time/get');
-      
+
       SVC.call(REQ, res => {
         EXPECT(res.payload).instanceOf(Date);
         TIME_SERVICE.close(instance);
@@ -45,9 +44,9 @@ describe(SERVICE_NAME, () => {
 
   it('Should timeout', next => {
     TIME_SERVICE.listen(instance => {
-      
+
       const REQ = new ORION.Request('/time/shouldTimeout');
-      
+
       SVC.call(REQ, res => {
         EXPECT(res.error.code).equal('ORION_TRANSPORT');
         TIME_SERVICE.close(instance);
@@ -59,7 +58,7 @@ describe(SERVICE_NAME, () => {
 
   it('Should not timeout', next => {
     TIME_SERVICE.listen(instance => {
-      
+
       let req = new ORION.Request('/time/shouldNotTimeout');
       req.timeout = 300;
 
@@ -80,7 +79,7 @@ describe(SERVICE_NAME, () => {
       EXPECT(data).equal(PAYLOAD);
       next();
     });
-  
+
     SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD);
   });
 
