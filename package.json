@@ -57,7 +57,8 @@
       "**/*.d.ts",
       "coverage/",
       "docs/",
-      "examples/"
+      "examples/",
+      "lib/"
     ],
     "reporter": [
       "html",
