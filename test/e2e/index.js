@@ -113,10 +113,13 @@ describe(SERVICE_NAME, () => {
     SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD+"4");
     SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD+"5");
     
-    // Wait some ticks for events to come. 
-    await sleep(0);
-    await sleep(0);
-    await sleep(0);
+    // Wait some time ticks for events to come.
+    const maximumWait = 200;
+    let waited = 0;
+    while (waited < maximumWait && producer.length < 5) {
+      waited += 10;
+      await sleep(10);
+    }
 
     EXPECT(producer.length).to.be.eq(5);
 
