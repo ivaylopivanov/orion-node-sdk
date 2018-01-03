@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "build": "tsc && npm run ghpages && cp .nojekyll docs/.nojekyll",
-    "test": "npm run lint && npm run build && node_modules/.bin/mocha ./test",
+    "test": "npm run lint && npm run build && mocha --compilers ts-node/register --require source-map-support/register --recursive ./test/index.ts",
     "coverage": "nyc mocha --compilers ts-node/register --require source-map-support/register --recursive ./test/index.ts",
     "covreport": "npm run coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "lint": "tslint --config tslint.json src/**/*.ts --exclude src/**/*.d.ts",
