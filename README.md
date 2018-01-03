@@ -41,6 +41,59 @@ BAR.call(REQ, res => {
 
 You can find more detailed examples in the `examples` folder.
 
+## Async example
+
+This utility also supports functionality with Promises, so the following code can be also used:
+
+```js
+const ORION = require('@betit/orion-node-sdk');
+const FOO = new ORION.Service('foo');
+
+FOO.handle('get', async (req) => {
+  return new ORION.Response('foo');
+});
+
+async function initFOO() {
+  await FOO.listen();
+  FOO.logger.createMessage('ready').send()
+}
+
+init().then(exit);
+```
+
+And in `bar.js`:
+
+```js
+const ORION = require('@betit/orion-node-sdk');
+const BAR = new ORION.Service('bar');
+
+const REQ = new ORION.Request('/foo/get');
+
+async function main() {
+  const res = await BAR.call(REQ);
+  // do stuff
+}
+
+main().then(exit);
+```
+
+Also, subscriptions can now be looped forever using: 
+
+```js
+const ORION = require('@betit/orion-node-sdk');
+const BAR = new ORION.Service('bar');
+
+async function processEvents() {
+  const producer = BAR.onAsync("event");
+
+  while (true) {
+    const event = await producer.consume();
+  }
+}
+
+...
+```
+
 # Documentation
 
 Auto-generated documentation is located [here](https://betit.github.io/orion-node-sdk/).

@@ -8,8 +8,12 @@ import { Request } from '../request/request';
 import { Response } from '../response/response';
 import { OrionError } from '../error/error';
 import { generateId, debugLog } from '../utils';
+import { AsyncArray } from '../utils/asyncArray';
 
 function noop() {}
+
+export type CallbackRequestFunction = (d: Error|Response) => any;
+export type CallbackHandleFunction = (req: Request, cb: (res?: Response) => any) => Promise<Response>|void;
 
 const DEBUG = debugLog('orion:service');
 
@@ -43,6 +47,7 @@ export class Service {
    * Subscribe to a topic.
    * @param {string} topic
    * @param {Function} callback
+   * @param {boolean} disableGroup
    */
   public on(topic: string, callback: Function, disableGroup: boolean = false) {
     const SUBJECT = `${this.name}:${topic}`;
@@ -52,6 +57,21 @@ export class Service {
     });
   }
 
+  /**
+   * Subscribe to a topic, getting a producer/consumer array of promises.
+   * @param {string} topic
+   * @param {boolean} disableGroup
+   * @returns An async array following the producer/consumer pattern.
+   */
+  public onAsync<T = any>(topic: string, disableGroup: boolean = false) {
+    const SUBJECT = `${this.name}:${topic}`;
+    const array = new AsyncArray<T>();
+    DEBUG('onAsync:', SUBJECT);
+    this._transport.subscribe(SUBJECT, disableGroup ? null : this.name, message => {
+      array.produce(this._codec.decode(message));
+    });
+    return array;
+  }
 
 
   /**
@@ -60,7 +80,7 @@ export class Service {
    * @param {Function} callback
    * @param {string} [prefix]
    */
-  public handle(path: string, callback: Function, prefix?: string) {
+  public handle(path: string, callback: CallbackHandleFunction, prefix?: string) {
     const LOGGING = true;
     this._handle(path, callback, LOGGING, prefix);
   }
@@ -71,7 +91,7 @@ export class Service {
    * @param {Function} callback
    * @param {string} [prefix]
    */
-  public handleWithoutLogging(path: string, callback: Function, prefix?: string) {
+  public handleWithoutLogging(path: string, callback: CallbackHandleFunction, prefix?: string) {
     const LOGGING = false;
     this._handle(path, callback, LOGGING, prefix);
   }
@@ -79,10 +99,17 @@ export class Service {
   /**
    * Start listenning on the underlying transport connection.
    * @param {Function} callback
+   * @returns {Promise} returns promise if called with no callback.
    */
-  public listen(callback: Function) {
+  public listen(callback: Function): Promise<any> {
     DEBUG('listen');
-    this._transport.listen(callback);
+    if (callback) {
+      this._transport.listen(callback);
+    } else {
+      return new Promise((res, rej) => {
+        this._transport.listen(res);
+      });
+    }
   }
 
   /**
@@ -123,29 +150,39 @@ export class Service {
 
   /**
    * Call service method.
-   * @param {Object} request
+   * @param {Request} request
    * @param {Object} [params]
    * @param {Function} callback
+   * @returns {Promise} returns promise if called with no callback.
    */
-  public call(req: any, callback?: Function) {
+  public call(req: Request, callback?: CallbackRequestFunction) {
     if (req instanceof Request === false) {
       throw new Error('Request must be instance of Orion.Request');
     }
     if (!callback) {
-      callback = function () { };
+      return new Promise<Response>((res, rej) => {
+        this._serializeRequest(req, (d) => {
+          if (d instanceof Error) {
+            rej(d);
+          } else {
+            res(d);
+          }
+        });
+      });
+    } else {
+      this._serializeRequest(req, callback);
     }
-    this._serializeRequest(req, callback);
   }
 
   private _getCallTimeout(path: string, timeout: number) {
     let options = this.options;
     let specificCallTimeout =
-      options.timeout && options.timeouts[path];
+      options.timeout && options.timeouts[path] as number;
 
     return timeout || specificCallTimeout || options.timeout;
   }
 
-  private _call(route: string, req: Request, callback: Function) {
+  private _call(route: string, req: Request, callback: CallbackRequestFunction) {
     const CLOSE_TRACER = this._tracer.trace(req);
 
     this._transport.request(route, this._codec.encode(req), res => {
@@ -162,7 +199,7 @@ export class Service {
     }, this._getCallTimeout(req.path, req.timeout));
   }
 
-  private _handle(path: string, callback: Function, logging: boolean, prefix?: string) {
+  private _handle(path: string, callback: CallbackHandleFunction, logging: boolean, prefix?: string) {
     const ROUTE = `${prefix || this.name}.${path}`;
     DEBUG('register handler:', ROUTE);
     this._transport.handle(ROUTE, this.name, (data, send) => {
@@ -185,7 +222,12 @@ export class Service {
 
       DEBUG('incoming request:', req);
 
-      callback(req, (res: Response) => {
+      let onlyOnce = false;
+      const afterCallback = (res: Response) => {
+        if (onlyOnce) {
+          throw new Error('The handler\'s callback was called more than once');
+        }
+        onlyOnce = true;
         this._checkResponse(res);
         if (res.error && logging) {
 
@@ -196,11 +238,20 @@ export class Service {
                      .send();
         }
         send(this._codec.encode(res));
-      });
+      };
+
+      let looksPromising = false;
+      const promise = callback(req, afterCallback);
+      if (promise instanceof Promise) {
+        looksPromising = true;
+        promise
+          .then(afterCallback)
+          .catch((err) => {throw err; });
+      }
     });
   }
 
-  private _serializeRequest(request: Request, callback?: Function) {
+  private _serializeRequest(request: Request, callback?: CallbackRequestFunction) {
     let route = request.path;
 
     // services registered with names like `service.method`
@@ -233,7 +284,7 @@ export class Service {
     this._call(route, req, callback);
   }
 
-  private _checkResponse(res: Response) {
+  private _checkResponse(res: any): res is Response {
     if (res instanceof Response === false) {
       throw new Error('The response must instance of Orion.Response');
     }
@@ -241,6 +292,7 @@ export class Service {
         res.error instanceof OrionError === false) {
       throw new Error('The passed error must instance of Orion.Error');
     }
-  }
 
+    return true;
+  }
 }

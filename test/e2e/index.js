@@ -9,6 +9,12 @@ const EXPECT = require('chai').expect;
 const SERVICE_NAME = 'e2e';
 const SVC = new ORION.Service(SERVICE_NAME);
 
+async function sleep(ms) {
+  return new Promise((res, rej) => {
+      setTimeout(res, ms);
+  });
+}
+
 SVC.listen(() => {});
 
 describe(SERVICE_NAME, () => {
@@ -84,4 +90,42 @@ describe(SERVICE_NAME, () => {
     SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD);
   });
 
+  it('Should work for asynchronous calls', async () => {
+    const instance = await CALC_SERVICE.listen();
+    const a = ~~Math.random();
+    const b = ~~Math.random();
+    const REQ = new ORION.Request('/calc/sum', {a, b});
+    
+    const res = await SVC.call(REQ);
+    EXPECT(res.payload).equal(a + b);      
+    CALC_SERVICE.close(instance);
+  });
+
+  it('Should work for asynchronous events', async () => {
+    const PAYLOAD = 'payload';
+    const TOPIC = 'topic2';
+
+    const producer = SVC.onAsync(TOPIC);
+
+    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD+"1");
+    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD+"2");
+    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD+"3");
+    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD+"4");
+    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD+"5");
+    
+    // Wait some ticks for events to come. 
+    await sleep(0);
+    await sleep(0);
+    await sleep(0);
+
+    EXPECT(producer.length).to.be.eq(5);
+
+    EXPECT(await producer.consume()).to.be.eq(PAYLOAD+"1");
+    EXPECT(await producer.consume()).to.be.eq(PAYLOAD+"2");
+    EXPECT(await producer.consume()).to.be.eq(PAYLOAD+"3");
+    EXPECT(await producer.consume()).to.be.eq(PAYLOAD+"4");
+    EXPECT(await producer.consume()).to.be.eq(PAYLOAD+"5");
+
+    EXPECT(producer.length).to.be.eq(0); 
+  });
 });
