@@ -92,8 +92,8 @@ describe(SERVICE_NAME, () => {
 
   it('Should work for asynchronous calls', async () => {
     const instance = await CALC_SERVICE.listen();
-    const a = ~~Math.random();
-    const b = ~~Math.random();
+    const a = ~~(Math.random()*65535);
+    const b = ~~(Math.random()*65535);
     const REQ = new ORION.Request('/calc/sum', {a, b});
     
     const res = await SVC.call(REQ);
