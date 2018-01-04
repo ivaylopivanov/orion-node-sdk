@@ -101,7 +101,7 @@ export class Service {
    * @param {Function} callback
    * @returns {Promise} returns promise if called with no callback.
    */
-  public listen(callback: Function): Promise<any> {
+  public listen(callback?: Function): Promise<any> {
     DEBUG('listen');
     if (callback) {
       this._transport.listen(callback);
