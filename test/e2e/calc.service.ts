@@ -1,6 +1,6 @@
 import * as ORION from '../../src/orion';
 
-export function listen(callback) {
+export function listen(callback?: Function) {
   const SVC = new ORION.Service('calc');
 
   SVC.handle('sum', (req, reply) => {
