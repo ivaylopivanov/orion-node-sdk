@@ -1,11 +1,9 @@
-// @ts-check
-'use strict';
+import * as ORION from '../../src/orion';
 
-const ORION = require('../../');
 
-module.exports.listen = function listen(callback) {
+export function listen(callback) {
   const SVC = new ORION.Service('time');
-  
+
   SVC.handle('get', (req, reply) => {
     reply(new ORION.Response(new Date()));
   });
@@ -23,7 +21,7 @@ module.exports.listen = function listen(callback) {
   SVC.listen(() => callback(SVC));
 }
 
-module.exports.close = function close(svc) {
+export function close(svc) {
   svc.close();
 }
 

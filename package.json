@@ -17,8 +17,8 @@
   ],
   "scripts": {
     "build": "tsc && npm run ghpages && cp .nojekyll docs/.nojekyll",
-    "test": "npm run lint && npm run build && node_modules/.bin/mocha ./test",
-    "coverage": "istanbul cover node_modules/mocha/bin/_mocha ./test",
+    "test": "npm run lint && npm run build && mocha --compilers ts-node/register --require source-map-support/register --recursive ./test/index.ts",
+    "coverage": "nyc mocha --compilers ts-node/register --require source-map-support/register --recursive ./test/index.ts",
     "covreport": "npm run coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "lint": "tslint --config tslint.json src/**/*.ts --exclude src/**/*.d.ts",
     "ghpages": "typedoc --out docs/ src/"
@@ -34,13 +34,36 @@
     "zipkin-transport-http": "0.9.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.0.10",
+    "@types/mocha": "^2.2.45",
     "@types/node": "8.0.42",
     "chai": "4.1.2",
     "coveralls": "3.0.0",
     "istanbul": "0.4.5",
     "mocha": "4.0.1",
+    "nyc": "^11.4.1",
+    "source-map-support": "^0.5.0",
+    "ts-node": "^4.1.0",
     "tslint": "5.8.0",
     "typedoc": "0.9.0",
     "typescript": "2.6.1"
+  },
+  "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "exclude": [
+      "**/*.d.ts",
+      "coverage/",
+      "docs/",
+      "examples/",
+      "lib/"
+    ],
+    "reporter": [
+      "html",
+      "lcov"
+    ],
+    "all": true
   }
 }

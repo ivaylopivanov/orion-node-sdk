@@ -3,7 +3,8 @@
         "declaration": true,
         "module": "commonjs",
         "target": "es2015",
-        "outDir": "lib"
+        "outDir": "lib",
+        "sourceMap": true
     },
     "exclude": [
         "node_modules",
