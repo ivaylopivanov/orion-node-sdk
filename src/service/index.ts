@@ -65,12 +65,12 @@ export class Service {
    */
   public onAsync<T = any>(topic: string, disableGroup: boolean = false) {
     const SUBJECT = `${this.name}:${topic}`;
-    const array = new AsyncArray<T>();
+    const ARRAY = new AsyncArray<T>();
     DEBUG('onAsync:', SUBJECT);
     this._transport.subscribe(SUBJECT, disableGroup ? null : this.name, message => {
-      array.produce(this._codec.decode(message));
+      ARRAY.produce(this._codec.decode(message));
     });
-    return array;
+    return ARRAY;
   }
 
 
@@ -267,7 +267,7 @@ export class Service {
     }
 
     if (!route) {
-      return callback(new Response({}, new OrionError('Invalid request path')));
+      return callback(new Response(null, new OrionError('Invalid request path')));
     }
 
     if (this.options.service) {
