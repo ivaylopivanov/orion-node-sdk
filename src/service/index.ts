@@ -12,7 +12,7 @@ import { AsyncArray } from '../utils/asyncArray';
 
 function noop() {}
 
-export type CallbackRequestFunction = (d: Error|Response) => any;
+export type CallbackRequestFunction = (d: Response) => any;
 export type CallbackHandleFunction = (req: Request, cb: (res?: Response) => any) => Promise<Response>|void;
 
 const DEBUG = debugLog('orion:service');
@@ -267,7 +267,7 @@ export class Service {
     }
 
     if (!route) {
-      return callback(new Error('Invalid request path'));
+      return callback(new Response({}, new OrionError('Invalid request path')));
     }
 
     if (this.options.service) {
