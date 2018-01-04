@@ -93,6 +93,49 @@ BAR.call(REQ, res =&gt; {
 });
 </code></pre>
 				<p>You can find more detailed examples in the <code>examples</code> folder.</p>
+				<h2 id="async-example">Async example</h2>
+				<p>This utility also supports functionality with Promises, so the following code can be also used:</p>
+				<pre><code class="lang-js"><span class="hljs-keyword">const</span> ORION = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@betit/orion-node-sdk'</span>);
+<span class="hljs-keyword">const</span> FOO = <span class="hljs-keyword">new</span> ORION.Service(<span class="hljs-string">'foo'</span>);
+
+FOO.handle(<span class="hljs-string">'get'</span>, <span class="hljs-keyword">async</span> (req) =&gt; {
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ORION.Response(<span class="hljs-string">'foo'</span>);
+});
+
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">initFOO</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">await</span> FOO.listen();
+  FOO.logger.createMessage(<span class="hljs-string">'ready'</span>).send()
+}
+
+init().then(exit);
+</code></pre>
+				<p>And in <code>bar.js</code>:</p>
+				<pre><code class="lang-js"><span class="hljs-keyword">const</span> ORION = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@betit/orion-node-sdk'</span>);
+<span class="hljs-keyword">const</span> BAR = <span class="hljs-keyword">new</span> ORION.Service(<span class="hljs-string">'bar'</span>);
+
+<span class="hljs-keyword">const</span> REQ = <span class="hljs-keyword">new</span> ORION.Request(<span class="hljs-string">'/foo/get'</span>);
+
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">await</span> BAR.call(REQ);
+  <span class="hljs-comment">// do stuff</span>
+}
+
+main().then(exit);
+</code></pre>
+				<p>Also, subscriptions can now be looped forever using: </p>
+				<pre><code class="lang-js"><span class="hljs-keyword">const</span> ORION = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@betit/orion-node-sdk'</span>);
+<span class="hljs-keyword">const</span> BAR = <span class="hljs-keyword">new</span> ORION.Service(<span class="hljs-string">'bar'</span>);
+
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">processEvents</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> producer = BAR.onAsync(<span class="hljs-string">"event"</span>);
+
+  <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) {
+    <span class="hljs-keyword">const</span> event = <span class="hljs-keyword">await</span> producer.consume();
+  }
+}
+
+...
+</code></pre>
 				<h1 id="documentation">Documentation</h1>
 				<p>Auto-generated documentation is located <a href="https://betit.github.io/orion-node-sdk/">here</a>.</p>
 				<h2 id="tests">Tests</h2>
@@ -157,6 +200,9 @@ $ npm <span class="hljs-built_in">test</span>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_types_interfaces_.html">"types/interfaces"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_utils_asyncarray_.html">"utils/async<wbr>Array"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_utils_index_.html">"utils/index"</a>

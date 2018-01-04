@@ -7,7 +7,11 @@ export function listen(callback) {
     reply(new ORION.Response(req.params.a + req.params.b));
   });
 
-  SVC.listen(() => callback(SVC));
+  if (callback) {
+    SVC.listen(() => callback(SVC));
+  } else {
+    return SVC.listen().then(() => SVC);
+  }
 }
 
 export function close(svc) {
