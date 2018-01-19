@@ -240,10 +240,8 @@ export class Service {
         send(this._codec.encode(res));
       };
 
-      let looksPromising = false;
       const promise = callback(req, afterCallback);
       if (promise instanceof Promise) {
-        looksPromising = true;
         promise
           .then(afterCallback)
           .catch((err) => {throw err; });
