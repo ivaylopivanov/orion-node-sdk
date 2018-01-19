@@ -31,7 +31,7 @@ export class Logger implements LoggerInterface {
       this._consoleLog(m);
     }
     try {
-      const params = JSON.stringify(m.params);
+      const params = JSON.stringify(m.params) || '';
       if (params.length > MAXIMUM_PARAMS_SIZE) {
         m.params = params.substr(0, 4 * KiB) + '...';
         this._client.info(new Error(`HUGE PARAMETER SIZE (${params.length})`));
