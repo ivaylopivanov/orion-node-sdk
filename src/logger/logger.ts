@@ -5,11 +5,15 @@ import { RawMessage, Logger as LoggerInterface } from '../types/interfaces';
 import { Message } from './message';
 import * as Colors from './colors';
 import * as LoggerLevels from './levels';
+import { ERROR } from './levels';
+
+const KiB = 1024;
+const MAXIMUM_PARAMS_SIZE = 30 * KiB; // Let the 2KiB to 32KiB free for other fields.
 
 export class Logger implements LoggerInterface {
 
   private _client: any;
-  private _vernose = process.argv.indexOf('--verbose') !== -1;
+  private _verbose = process.argv.indexOf('--verbose') !== -1;
 
   constructor(private _serviceName: string) {
     this._client = new graylog({
@@ -23,10 +27,25 @@ export class Logger implements LoggerInterface {
   }
 
   public send(m: RawMessage) {
-    if (this._vernose) {
+    if (this._verbose) {
       this._consoleLog(m);
     }
-    this._client.raw(m);
+    try {
+      const params = JSON.stringify(m.params);
+      if (params.length > MAXIMUM_PARAMS_SIZE) {
+        m.params = params.substr(0, 4 * KiB) + '...';
+        this._client.info(new Error(`HUGE PARAMETER SIZE (${params.length})`));
+      } else {
+        m.params = params;
+      }
+      this._client.raw(m);
+    } catch (e) {
+      this._client.info(e);
+      this._client.raw(Object.assign({}, m, {
+        level: ERROR,
+        params: undefined,
+      }));
+    }
   }
 
   private _consoleLog(m: RawMessage) {
