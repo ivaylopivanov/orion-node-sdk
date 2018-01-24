@@ -17,7 +17,6 @@ async function sleep(ms) {
 SVC.listen(() => {});
 
 describe(SERVICE_NAME, () => {
-
   after(() => SVC.close());
 
   it('Should sum two numbers', next => {
@@ -91,12 +90,12 @@ describe(SERVICE_NAME, () => {
 
   it('Should work for asynchronous calls', async () => {
     const instance = await CALC_SERVICE.listen();
-    const a = ~~(Math.random()*65535);
-    const b = ~~(Math.random()*65535);
+    const a = ~~(Math.random() * 65535);
+    const b = ~~(Math.random() * 65535);
     const REQ = new ORION.Request('/calc/sum', {a, b});
-    
+
     const res = await SVC.call(REQ);
-    EXPECT(res.payload).equal(a + b);      
+    EXPECT(res.payload).equal(a + b);
     CALC_SERVICE.close(instance);
   });
 
@@ -106,12 +105,12 @@ describe(SERVICE_NAME, () => {
 
     const producer = SVC.onAsync(TOPIC);
 
-    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD+"1");
-    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD+"2");
-    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD+"3");
-    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD+"4");
-    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD+"5");
-    
+    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD + '1');
+    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD + '2');
+    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD + '3');
+    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD + '4');
+    SVC.emit(SERVICE_NAME + ':' + TOPIC, PAYLOAD + '5');
+
     // Wait some time ticks for events to come.
     const maximumWait = 200;
     let waited = 0;
@@ -122,12 +121,12 @@ describe(SERVICE_NAME, () => {
 
     EXPECT(producer.length).to.be.eq(5);
 
-    EXPECT(await producer.consume()).to.be.eq(PAYLOAD+"1");
-    EXPECT(await producer.consume()).to.be.eq(PAYLOAD+"2");
-    EXPECT(await producer.consume()).to.be.eq(PAYLOAD+"3");
-    EXPECT(await producer.consume()).to.be.eq(PAYLOAD+"4");
-    EXPECT(await producer.consume()).to.be.eq(PAYLOAD+"5");
+    EXPECT(await producer.consume()).to.be.eq(PAYLOAD + '1');
+    EXPECT(await producer.consume()).to.be.eq(PAYLOAD + '2');
+    EXPECT(await producer.consume()).to.be.eq(PAYLOAD + '3');
+    EXPECT(await producer.consume()).to.be.eq(PAYLOAD + '4');
+    EXPECT(await producer.consume()).to.be.eq(PAYLOAD + '5');
 
-    EXPECT(producer.length).to.be.eq(0); 
+    EXPECT(producer.length).to.be.eq(0);
   });
 });

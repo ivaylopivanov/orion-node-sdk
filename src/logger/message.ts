@@ -1,10 +1,12 @@
 import { Logger, Message as MessageInterface } from '../types/interfaces';
+import { getLineFromError } from '../utils/index';
 
 export class Message implements MessageInterface {
 
   private _id: string;
   private _level: number;
   private _params: any;
+  private _loc: string;
 
   constructor(private _client: Logger,
               private _host: string,
@@ -13,6 +15,12 @@ export class Message implements MessageInterface {
 
   public setLevel(level: number): this {
     this._level = level;
+    return this;
+  }
+
+  public setLOC(err: Error) {
+    const LOC = getLineFromError(err);
+    this._loc = LOC.filepath + ':' + LOC.line;
     return this;
   }
 
@@ -37,6 +45,9 @@ export class Message implements MessageInterface {
     }
     if (this._params !== undefined) {
       m.params = this._params;
+    }
+    if (this._loc !== undefined) {
+      m.loc = this._loc;
     }
     if (this._id !== undefined) {
       m['x-trace-id'] = this._id;

@@ -51,6 +51,7 @@ export interface Message {
   setId(id: string): Message;
   setParams(params: any): Message;
   setLevel(level: number): Message;
+  setLOC(err: Error): this;
   send();
 }
 

@@ -1,5 +1,6 @@
 import crypto = require('crypto');
 import debug = require('debug');
+import { OrionError } from '../error/error';
 
 /**
  * @module utils
@@ -25,5 +26,35 @@ export function generateId(len: number = 7, hex?: boolean) {
             str.push(UIDCHARS[BUF[i] % UIDCHARS.length]);
         }
         return str.join('');
+    }
+}
+
+export function getLineFromError(e: Error) {
+    // An example stack:
+    /* Error
+        at repl:1:1
+        at ContextifyScript.Script.runInThisContext (vm.js:50:33)
+        at REPLServer.defaultEval (repl.js:242:29)
+        ...
+     */
+    // This regex gets:
+    // (vm.js:50:33)
+    // 1 vm.js
+    // 2 50
+    // 3 33
+    const regex = /\((.*):(\d+):(\d+)\)$/;
+    const match = regex.exec(e.stack.split('\n')[1]);
+    return {
+        filepath: match[1],
+        line: match[2],
+        column: match[3]
+    };
+}
+
+export function StringifyError(e: Error|OrionError) {
+    if (e instanceof OrionError) {
+        return JSON.stringify({message: e.message, code: e.code});
+    } else {
+        return `{"message":"${e.message}"}`;
     }
 }
