@@ -7,7 +7,7 @@ import * as LOGGER_LEVELS from '../logger/levels';
 import { Request } from '../request/request';
 import { Response } from '../response/response';
 import { OrionError } from '../error/error';
-import { generateId, debugLog } from '../utils';
+import { generateId, debugLog, StringifyError } from '../utils';
 import { AsyncArray } from '../utils/asyncArray';
 
 function noop() {}
@@ -233,8 +233,9 @@ export class Service {
 
           this.logger.createMessage(path)
                      .setLevel(LOGGER_LEVELS.ERROR)
+                     .setLOC(res.error)
                      .setId(req.getId())
-                     .setParams(JSON.stringify(res.error))
+                     .setParams(StringifyError(res.error))
                      .send();
         }
         send(this._codec.encode(res));
