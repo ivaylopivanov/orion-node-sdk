@@ -30,6 +30,18 @@ export function generateId(len: number = 7, hex?: boolean) {
 }
 
 export function getLineFromError(e: Error) {
+    // An example stack:
+    /* Error
+        at repl:1:1
+        at ContextifyScript.Script.runInThisContext (vm.js:50:33)
+        at REPLServer.defaultEval (repl.js:242:29)
+        ...
+     */
+    // This regex gets:
+    // (vm.js:50:33)
+    // 1 vm.js
+    // 2 50
+    // 3 33
     const regex = /\((.*):(\d+):(\d+)\)$/;
     const match = regex.exec(e.stack.split('\n')[1]);
     return {
