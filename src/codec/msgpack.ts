@@ -1,5 +1,6 @@
 import msgpack = require('msgpack-lite');
 import { debugLog } from '../utils';
+import { OrionError } from '../error/error';
 
 const DEBUG = debugLog('orion:codec:msgpack');
 
@@ -15,6 +16,9 @@ export class MsgPackCodec {
    */
   public encode(data: any) {
     DEBUG('encode');
+    if (data && data.error && data.error instanceof OrionError) {
+      return msgpack.encode({...data, error: {code: data.error.code, message: data.error.message, uuid: data.error.uuid}});
+    }
     return msgpack.encode(data);
   }
 
