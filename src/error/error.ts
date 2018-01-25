@@ -7,6 +7,8 @@ export class OrionError extends Error {
 
   constructor(public code: string, message?: string) {
     super(message || code);
+    // Delete this.message from original error. Hope this isn't breaking anything.
+    delete this.message;
     this.message = message || code;
   }
 
