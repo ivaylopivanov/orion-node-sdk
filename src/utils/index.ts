@@ -42,8 +42,25 @@ export function getLineFromError(e: Error) {
     // 1 vm.js
     // 2 50
     // 3 33
+    if (typeof e.stack !== 'string') {
+        return {
+            filepath: 'unknown_no_stack.js',
+            line: '0',
+            column: '0',
+        };
+    }
+
     const regex = /\((.*):(\d+):(\d+)\)$/;
-    const match = regex.exec(e.stack.split('\n')[1]);
+    const match = regex.exec(e.stack.split('\n')[1] || '');
+
+    if (!match) {
+        return {
+            filepath: 'could_not_match ' + e.stack,
+            line: '0',
+            column: '0',
+        };
+    }
+
     return {
         filepath: match[1],
         line: match[2],

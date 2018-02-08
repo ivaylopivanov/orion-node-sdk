@@ -230,7 +230,6 @@ export class Service {
         onlyOnce = true;
         this._checkResponse(res);
         if (res.error && logging) {
-
           this.logger.createMessage(path)
                      .setLevel(LOGGER_LEVELS.ERROR)
                      .setLOC(res.error)
