@@ -12,4 +12,9 @@ export class Request {
     return this.meta['x-trace-id'];
   }
 
+  public merge(req: Request) {
+    this.meta = req.meta;
+    this.tracerData = req.tracerData;
+  }
+
 }
